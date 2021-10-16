@@ -1,0 +1,15 @@
+textarea {
+    min-height: 400px;
+}
+a {
+    text-decoration: none;
+}
+#myDiv {
+    border-style: solid;
+    background-color: aqua;
+    margin-bottom: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+    
+}
+
