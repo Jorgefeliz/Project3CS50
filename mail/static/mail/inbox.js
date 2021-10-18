@@ -34,16 +34,17 @@ function compose_email() {
     let body = document.querySelector('#compose-body').value;
 
     
-    console.log(subject);
+    
     console.log(body);
     console.log(recipients);
+    console.log(subject);
     
     fetch('/emails', {
       method: 'POST',
       body: JSON.stringify({
-          recipients: recipients,
-          subject: subject,
-          body: body
+          recipients: "laura@volqz.com",
+          subject: "subject",
+          body: "body"
           
       })
     })
@@ -94,16 +95,9 @@ function show_emails(mailbox){
   fetch(route)
   .then(response => response.json())
   .then(emails => {
-    // Print emails
     
-    console.log(mailbox);
- 
-    // ... do something else with emails ...
-
-    
-
     emails.forEach(email => { 
-      console.log(email.id);
+      //console.log(email.id);
 
       const email_view = document.getElementById('emails-view');
       let myDiv = document.createElement('div');
@@ -125,10 +119,20 @@ function show_emails(mailbox){
         myDiv.setAttribute("style", "background-color: gray");
       }
      
-      // `<a class="email" href="http://127.0.0.1:8000/emails/${email.id}" > </a>
+      if (mailbox === "sent"){
+        myDiv.innerHTML = `<strong> ${email.sender} </strong> <em> ${email.subject} </em> <i> ${email.timestamp} </i>
+        <input type="button" value="Read" onclick="show_one_email(${email.id}, ${mailbox});" />`;
+
+      }
+
+      else{
+
+             // `<a class="email" href="http://127.0.0.1:8000/emails/${email.id}" > </a>
       myDiv.innerHTML = `<strong> ${email.sender} </strong> <em> ${email.subject} </em> <i> ${email.timestamp} </i>
-                        <input type="button" value="Read" onclick="show_one_email(${email.id});" />
-                        <input type="button" value="Archive" onclick="archive_email(${email.id});" />`;
+      <input type="button" value="Read" onclick="show_one_email(${email.id});" />
+      <input type="button" value="Archive" onclick="archive_email(${email.id});" />`;
+      }
+ 
       
 
       //myDiv.append(strong,' ', em, ' ', time);
@@ -142,33 +146,47 @@ function show_emails(mailbox){
 }
 
 function show_one_email(email_id){
+
   document.querySelector('#email-read').style.display = 'block';
   document.querySelector('#emails-view').style.display = 'none';
   document.querySelector('#compose-view').style.display = 'none';
 //-----------------------------------------------------------
+let email_read = document.getElementById('email-read');
+//email_read = document.innerHTML = "";
 
 let route = "/emails/" + email_id;
 fetch(route)
 .then(response => response.json())
 .then(email => {
-    // Print email
-    console.log(email_id);
-
       
-    let email_read = document.getElementById('email-read');
+    
     let myDiv = document.createElement('div');
     myDiv.setAttribute("id", "myDiv_read");
-    myDiv.innerHTML = `<div class="form-group">
-                        <small> ${email.timestamp} </small><br>
-                        From: <input disabled class="form-control" value="${email.sender}">
-                        
-                        To: <input disabled class="form-control" value="${email.recipients}">
 
-                        Subject: <p disable class="form-control"  >${email.subject}</p>
-                         </div>
-                        Body:
-                      <p disable class="form-control"  >${email.body}</p>`;
-    email_read.append(myDiv);
+   // if (mailbox === "NotSend") {
+
+    myDiv.innerHTML = `<div class="form-group">
+                          
+              <strong> From: </strong>  ${email.sender} <br>
+              <strong> To: </strong>  ${email.recipients} <br>
+              <strong> Subject: </strong>  ${email.subject} <br>
+              <strong> Timestamp: </strong>  ${email.timestamp} <br>
+              </div>
+                <hr>
+              <p disable >${email.body}</p>
+              <input type="button" value="Archive" onclick="archive_email(${email.id});">`;
+ 
+
+   
+  
+  email_read.append(myDiv);
+  console.log(email_id);
+
+   
+
+
+  
+    
 });
 
 fetch(route, {
@@ -177,5 +195,31 @@ fetch(route, {
       read: true
   })
 })
+
+}
+
+function archive_email(email_id){
+
+  let route = "/emails/" + email_id;
+  let status = false;
+
+  fetch(route)
+    .then(response => response.json())
+    .then(email => {
+      
+      if (email.archived === false){
+        status = true;
+      }
+    
+      });  // end fetch email request
+
+  fetch(route, {
+    method: 'PUT',
+    body: JSON.stringify({
+        archived : status
+    })
+  })
+  
+
 
 }
