@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function() {
   document.querySelector('#compose').addEventListener('click', compose_email);
 
   //document.querySelector(".read").addEventListener('click', () => show_one_email());
- 
+  document.querySelector('#compose-form').onsubmit = send_email;
   
   // By default, load the inbox
   load_mailbox('inbox');
@@ -25,37 +25,39 @@ function compose_email() {
   document.querySelector('#compose-subject').value = '';
   document.querySelector('#compose-body').value = '';
 
-  document.querySelector('#compose-form').onsubmit = function(){
+}
+
+function send_email(){
 
 
-    //------------------------------------------------------------------//
-    let recipients = document.querySelector('#compose-recipients').value;
-    let subject = document.querySelector('#compose-subject').value;
-    let body = document.querySelector('#compose-body').value;
+  //------------------------------------------------------------------//
+  const recipients = document.querySelector('#compose-recipients').value;
+  const subject = document.querySelector('#compose-subject').value;
+  const body = document.querySelector('#compose-body').value;
 
-    
-    
-    console.log(body);
-    console.log(recipients);
-    console.log(subject);
-    
-    fetch('/emails', {
-      method: 'POST',
-      body: JSON.stringify({
-          recipients: "laura@volqz.com",
-          subject: "subject",
-          body: "body"
-          
-      })
+  
+  
+  console.log(body);
+  console.log(recipients);
+  console.log(subject);
+  
+  fetch('/emails', {
+    method: 'POST',
+    body: JSON.stringify({
+        recipients: recipients,
+        subject: subject,
+        body: body
+        
     })
-    .then(response => response.json())
-    .then(result => {
-        // Print result
-        console.log(recipients);
-        console.log(result);
-    });
-
-  }
+  })
+  .then(response => response.json())
+  .then(result => {
+      // Print result
+      console.log(recipients);
+      console.log(result);
+  });
+localStorage.clear();
+load_mailbox('sent');
 }
 
 function load_mailbox(mailbox) {
