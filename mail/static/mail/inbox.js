@@ -160,9 +160,10 @@ if (archived_available === false) {
 
 //-------------------------------------------------------
 const email_read = document.getElementById('email-read');
+
 while(email_read.firstChild){
   email_read.removeChild(email_read.lastChild);
-}
+                            }
 //email_read = document.innerHTML = "";
 
 let route = "/emails/" + email_id;
@@ -189,7 +190,7 @@ fetch(route)
 
    //--------------------------------------------
 
-
+   
 
     myDiv.innerHTML = `<div class="form-group">
                           
@@ -197,6 +198,7 @@ fetch(route)
               <strong> To: </strong>  ${email.recipients} <br>
               <strong> Subject: </strong>  ${email.subject} <br>
               <strong> Timestamp: </strong>  ${email.timestamp} <br>
+              <input type="button" value="Reply:" onclick="reply_email(${email.id});">
               </div>
                 <hr>
               <p disable >${email.body}</p>
@@ -255,6 +257,44 @@ console.log(status);
     })
   })
   
+
+
+}
+
+function reply_email(email_id){
+
+  // Show compose view and hide other views
+  document.querySelector('#emails-view').style.display = 'none';
+  document.querySelector('#email-read').style.display = 'none';
+  document.querySelector('#compose-view').style.display = 'block';
+
+  // Clear out composition fields
+  document.querySelector('#compose-recipients').value = '';
+  document.querySelector('#compose-subject').value = '';
+  document.querySelector('#compose-body').value = '';
+
+let route = "/emails/" + email_id;
+let body = "";
+let subject = "";
+fetch(route)
+.then(response => response.json())
+.then(email => {
+
+  body = `\n \n On ${email.timestamp} ${email.sender} wrote: \n \n ${email.body}`;
+
+  if (email.subject.slice(0,4) === "Re: "){
+    subject = email.subject;
+  }
+  else{
+    subject = "Re: " + email.subject;
+  }
+
+    document.querySelector('#compose-recipients').value = email.recipients;
+    document.querySelector('#compose-subject').value = subject;
+    document.querySelector('#compose-body').value = body;
+
+    // ... do something else with email ...
+});
 
 
 }
