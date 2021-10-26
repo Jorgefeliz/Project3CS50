@@ -242,24 +242,18 @@ function archive_email(email_id){
         
       }
       //console.log(email);
-   
-
-  });
-
-  //--------------------------------------------------
-
-console.log(status);
-
-  fetch(route, {
+     fetch(route, {
     method: 'PUT',
     body: JSON.stringify({
       archived: status,
     })
   })
-  
+
+  });
 
 
 }
+
 
 function reply_email(email_id){
 
